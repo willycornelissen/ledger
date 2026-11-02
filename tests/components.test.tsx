@@ -51,7 +51,7 @@ describe('React Components Integration', () => {
 
     // Título Ledger e logo no topo
     expect(screen.getByRole('heading', { name: /Ledger/i })).toBeTruthy();
-    expect(screen.getByText(/Controle Financeiro/i)).toBeTruthy();
+    expect(screen.getByText(/Diário Financeiro/i)).toBeTruthy();
 
     // Botão de 3 pontos
     const menuBtn = screen.getByLabelText(/Menu de opções/i);

@@ -54,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBackupModal, onOpenCategor
               Ledger
             </h1>
             <p className="text-[10px] font-medium text-slate-500 leading-tight">
-              Controle Financeiro
+              Diário Financeiro
             </p>
           </div>
         </div>
