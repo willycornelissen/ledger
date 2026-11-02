@@ -3,7 +3,7 @@
  */
 import 'fake-indexeddb/auto';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { FinanceProvider } from '../src/context/FinanceContext';
 import { Header } from '../src/components/Header';
 import { TransactionList } from '../src/components/TransactionList';
@@ -34,6 +34,44 @@ describe('React Components Integration', () => {
     expect(screen.getByText(/Saldo do Mês/i)).toBeTruthy();
     expect(screen.getByText(/Receitas/i)).toBeTruthy();
     expect(screen.getByText(/Despesas/i)).toBeTruthy();
+  });
+
+  it('renders top App Bar with Ledger title and 3-dots menu', async () => {
+    let backupClicked = false;
+    let categoriesClicked = false;
+
+    render(
+      <FinanceProvider>
+        <Header
+          onOpenBackupModal={() => { backupClicked = true; }}
+          onOpenCategoryModal={() => { categoriesClicked = true; }}
+        />
+      </FinanceProvider>
+    );
+
+    // Título Ledger e logo no topo
+    expect(screen.getByRole('heading', { name: /Ledger/i })).toBeTruthy();
+    expect(screen.getByText(/Controle Financeiro/i)).toBeTruthy();
+
+    // Botão de 3 pontos
+    const menuBtn = screen.getByLabelText(/Menu de opções/i);
+    expect(menuBtn).toBeTruthy();
+
+    // Clica no botão de 3 pontos para abrir opções
+    fireEvent.click(menuBtn);
+
+    expect(screen.getByText(/Dados e Backup/i)).toBeTruthy();
+    expect(screen.getByText('Categorias')).toBeTruthy();
+    expect(screen.getByText(/Sobre o Ledger/i)).toBeTruthy();
+
+    // Testar clique em Dados e Backup
+    fireEvent.click(screen.getByText(/Dados e Backup/i));
+    expect(backupClicked).toBe(true);
+
+    // Reabre menu e testa Categorias
+    fireEvent.click(menuBtn);
+    fireEvent.click(screen.getByText('Categorias'));
+    expect(categoriesClicked).toBe(true);
   });
 
   it('renders empty state in TransactionList when no entries exist', async () => {

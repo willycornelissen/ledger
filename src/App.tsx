@@ -35,8 +35,11 @@ function FinanceApp() {
   return (
     <div className="min-h-screen bg-slate-200 sm:py-6 flex justify-center">
       <div className="w-full sm:max-w-md bg-white min-h-screen sm:min-h-[844px] sm:max-h-[900px] flex flex-col sm:rounded-3xl shadow-2xl relative overflow-hidden">
-        {/* Cabeçalho com mês, resumo de saldo e botão de Backup */}
-        <Header onOpenBackupModal={() => setIsBackupModalOpen(true)} />
+        {/* Cabeçalho com App Bar, mês, resumo de saldo e menu 3 pontos */}
+        <Header
+          onOpenBackupModal={() => setIsBackupModalOpen(true)}
+          onOpenCategoryModal={() => setIsCategoryModalOpen(true)}
+        />
 
         {/* Banner de Instalação Mobile (PWA) */}
         <PwaInstallBanner />
@@ -54,7 +57,7 @@ function FinanceApp() {
         </main>
 
         {/* Barra de Navegação Inferior (Mobile-first) */}
-        <nav className="bg-white border-t border-slate-200 px-4 py-2 flex items-center justify-around z-10 shrink-0">
+        <nav className="bg-white border-t border-slate-200 px-4 py-2 safe-bottom flex items-center justify-around z-10 shrink-0">
           {/* Aba Extrato */}
           <button
             onClick={() => setActiveView('ledger')}
