@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Capacitor } from '@capacitor/core';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -15,13 +16,15 @@ export function usePwaInstall() {
   const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
-    // Verifica se já está rodando em modo standalone (PWA instalado)
+    // Verifica se já está rodando em app nativo ou em modo standalone (PWA instalado)
+    const isNative = Capacitor.isNativePlatform();
     const isStandalone =
       (typeof window.matchMedia === 'function' && window.matchMedia('(display-mode: standalone)').matches) ||
       (window.navigator as unknown as { standalone?: boolean }).standalone === true;
 
-    if (isStandalone) {
+    if (isNative || isStandalone) {
       setIsInstalled(true);
+      setIsInstallable(false);
       return;
     }
 

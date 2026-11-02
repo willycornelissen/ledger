@@ -45,9 +45,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBackupModal, onOpenCategor
       <div className="flex items-center justify-between px-4 py-2.5">
         <div className="flex items-center gap-2.5">
           <img
-            src="/icon.svg"
+            src="/ledger.webp"
             alt="Ledger"
-            className="w-8 h-8 rounded-xl shadow-xs object-cover"
+            className="w-8 h-8 rounded-xl shadow-xs object-contain bg-white"
           />
           <div>
             <h1 className="text-base font-bold text-slate-900 tracking-tight leading-tight">
@@ -238,9 +238,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBackupModal, onOpenCategor
 
             <div className="flex items-center gap-3 mb-4">
               <img
-                src="/icon.svg"
+                src="/ledger.webp"
                 alt="Ledger"
-                className="w-12 h-12 rounded-2xl shadow-md"
+                className="w-12 h-12 rounded-2xl shadow-md object-contain bg-white"
               />
               <div>
                 <h3 className="text-lg font-bold text-slate-900">Ledger</h3>

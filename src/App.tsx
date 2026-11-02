@@ -6,7 +6,6 @@ import { DashboardView } from './components/DashboardView';
 import { TransactionForm } from './components/TransactionForm';
 import { CategoryManagerModal } from './components/CategoryManagerModal';
 import { BackupManagerModal } from './components/BackupManagerModal';
-import { PwaInstallBanner } from './components/PwaInstallBanner';
 import { Transaction } from './types/finance';
 import { Plus, ListFilter, PieChart, Tag } from 'lucide-react';
 
@@ -40,9 +39,6 @@ function FinanceApp() {
           onOpenBackupModal={() => setIsBackupModalOpen(true)}
           onOpenCategoryModal={() => setIsCategoryModalOpen(true)}
         />
-
-        {/* Banner de Instalação Mobile (PWA) */}
-        <PwaInstallBanner />
 
         {/* Conteúdo Dinâmico (Extrato ou Dashboard) */}
         <main className="flex-1 overflow-y-auto flex flex-col bg-slate-50">

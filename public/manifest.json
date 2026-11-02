@@ -10,6 +10,18 @@
   "theme_color": "#0f172a",
   "icons": [
     {
+      "src": "/ledger.webp",
+      "sizes": "260x280",
+      "type": "image/webp",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "260x280",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
       "src": "/icon.svg",
       "sizes": "192x192 512x512",
       "type": "image/svg+xml",
