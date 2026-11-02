@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <!-- Fundo com cantos arredondados (estilo app móvel) -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+
+  <!-- Carteira estilizada -->
+  <g filter="url(#shadow)" transform="translate(64, 80)">
+    <!-- Corpo da Carteira -->
+    <rect x="24" y="80" width="336" height="230" rx="36" fill="url(#primaryGrad)" />
+    <!-- Aba superior dobrada -->
+    <path d="M 24 140 L 360 140 C 360 140 360 80 324 80 L 60 80 C 24 80 24 140 24 140 Z" fill="#1d4ed8" opacity="0.6" />
+
+    <!-- Traço de crescimento / gráfico no corpo da carteira -->
+    <path d="M 64 240 L 120 200 L 170 220 L 250 150 L 300 180" fill="none" stroke="#93c5fd" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0.8" />
+
+    <!-- Fecho da Carteira -->
+    <path d="M 260 160 L 372 160 C 385 160 396 171 396 184 L 396 206 C 396 219 385 230 372 230 L 260 230 Z" fill="#1e40af" />
+    <!-- Botão metálico / moeda do fecho -->
+    <circle cx="350" cy="195" r="14" fill="url(#accentGrad)" />
+    <circle cx="350" cy="195" r="6" fill="#ffffff" opacity="0.8" />
+  </g>
+</svg>
