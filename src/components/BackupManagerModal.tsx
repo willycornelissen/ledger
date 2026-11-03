@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useFinance } from '../context/FinanceContext';
+import { calculateAnnualStats } from '../utils/statistics';
 import { CsvImportModal } from './CsvImportModal';
+import { AnnualReportModal } from './AnnualReportModal';
 import { PwaInstallActionCard } from './PwaInstallBanner';
-import { X, Database, UploadCloud, Download, FileSpreadsheet, ShieldCheck, Sparkles } from 'lucide-react';
+import { X, Database, UploadCloud, Download, FileSpreadsheet, ShieldCheck, Sparkles, FileText } from 'lucide-react';
 
 interface BackupManagerModalProps {
   isOpen: boolean;
@@ -10,10 +12,23 @@ interface BackupManagerModalProps {
 }
 
 export const BackupManagerModal: React.FC<BackupManagerModalProps> = ({ isOpen, onClose }) => {
-  const { exportBackupJson, exportCsvData, restoreMoneyLedgersHistory } = useFinance();
+  const {
+    exportBackupJson,
+    exportCsvData,
+    restoreMoneyLedgersHistory,
+    currentYear,
+    yearTransactions,
+    categories,
+  } = useFinance();
   const [isCsvImportOpen, setIsCsvImportOpen] = useState(false);
+  const [isAnnualReportOpen, setIsAnnualReportOpen] = useState(false);
   const [exporting, setExporting] = useState<boolean>(false);
   const [restoring, setRestoring] = useState<boolean>(false);
+
+  const annualStats = useMemo(() => {
+    if (!isOpen) return null;
+    return calculateAnnualStats(currentYear, yearTransactions, categories);
+  }, [isOpen, currentYear, yearTransactions, categories]);
 
   if (!isOpen) return null;
 
@@ -174,6 +189,26 @@ export const BackupManagerModal: React.FC<BackupManagerModalProps> = ({ isOpen, 
                   </div>
                 </div>
               </button>
+
+              {/* Exportar Relatório Anual */}
+              <button
+                onClick={() => setIsAnnualReportOpen(true)}
+                className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-blue-50/50 border border-slate-200 hover:border-blue-300 rounded-2xl text-left transition group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
+                    <FileText size={20} />
+                  </div>
+                  <div>
+                    <div className="font-bold text-sm text-slate-800 group-hover:text-blue-600 transition">
+                      Relatório Anual ({currentYear})
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      Imprimir / PDF, planilha analítica ou HTML
+                    </div>
+                  </div>
+                </div>
+              </button>
             </div>
           </div>
         </div>
@@ -184,6 +219,15 @@ export const BackupManagerModal: React.FC<BackupManagerModalProps> = ({ isOpen, 
         isOpen={isCsvImportOpen}
         onClose={() => setIsCsvImportOpen(false)}
       />
+
+      {/* Modal de Relatório Anual */}
+      {annualStats && (
+        <AnnualReportModal
+          isOpen={isAnnualReportOpen}
+          onClose={() => setIsAnnualReportOpen(false)}
+          stats={annualStats}
+        />
+      )}
     </>
   );
 };

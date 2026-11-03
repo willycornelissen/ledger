@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useMemo, useCall
 import { Category, Transaction, MonthlySummary, DailyTransactions, RawParsedRow, BackupData } from '../types/finance';
 import {
   getTransactionsByMonth,
+  getTransactionsByYear,
   saveTransaction,
   deleteTransaction,
   getCategories,
@@ -20,6 +21,7 @@ interface FinanceContextType {
   goToNextMonth: () => void;
   goToCurrentMonth: () => void;
   transactions: Transaction[];
+  yearTransactions: Transaction[];
   dailyTransactions: DailyTransactions[];
   categories: Category[];
   summary: MonthlySummary;
@@ -41,6 +43,7 @@ interface FinanceContextType {
   }>;
   exportBackupJson: () => Promise<void>;
   exportCsvData: () => Promise<void>;
+  getTransactionsForYear: (year: number) => Promise<Transaction[]>;
   refreshData: () => Promise<void>;
 }
 
@@ -54,17 +57,20 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [currentMonth, setCurrentMonth] = useState<number>(today.getMonth() + 1);
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [yearTransactions, setYearTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      const [txList, catList] = await Promise.all([
+      const [txList, yearTxList, catList] = await Promise.all([
         getTransactionsByMonth(currentYear, currentMonth),
+        getTransactionsByYear(currentYear),
         getCategories(),
       ]);
       setTransactions(txList);
+      setYearTransactions(yearTxList);
       setCategories(catList);
     } catch (err) {
       console.error('Erro ao carregar dados do IndexedDB:', err);
@@ -266,6 +272,16 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     URL.revokeObjectURL(url);
   }, []);
 
+  const getTransactionsForYearHandler = useCallback(
+    async (year: number) => {
+      if (year === currentYear && yearTransactions.length > 0) {
+        return yearTransactions;
+      }
+      return await getTransactionsByYear(year);
+    },
+    [currentYear, yearTransactions]
+  );
+
   // Totais mensais
   const summary: MonthlySummary = useMemo(() => {
     let totalIncome = 0;
@@ -320,6 +336,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     goToNextMonth,
     goToCurrentMonth,
     transactions,
+    yearTransactions,
     dailyTransactions,
     categories,
     summary,
@@ -334,6 +351,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     restoreMoneyLedgersHistory: restoreMoneyLedgersHistoryHandler,
     exportBackupJson: exportBackupJsonHandler,
     exportCsvData: exportCsvDataHandler,
+    getTransactionsForYear: getTransactionsForYearHandler,
     refreshData: loadData,
   };
 

@@ -90,4 +90,84 @@ describe('DashboardView Component Integration', () => {
     expect(salaryName).toBeTruthy();
     expect(screen.getByText('100%')).toBeTruthy();
   });
+
+  it('switches to annual view, displays annual metrics and opens annual report modal', async () => {
+    const today = new Date();
+    const y = today.getFullYear();
+
+    const txJanExpense: Transaction = {
+      id: 'tx-dash-jan',
+      type: 'expense',
+      amount: 15000, // R$ 150,00
+      date: `${y}-01-15`,
+      categoryId: 'cat-food',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+
+    const txNovExpense: Transaction = {
+      id: 'tx-dash-nov',
+      type: 'expense',
+      amount: 35000, // R$ 350,00
+      date: `${y}-11-10`,
+      categoryId: 'cat-housing',
+      createdAt: Date.now() + 1,
+      updatedAt: Date.now() + 1,
+    };
+
+    const txIncome: Transaction = {
+      id: 'tx-dash-inc',
+      type: 'income',
+      amount: 200000, // R$ 2.000,00
+      date: `${y}-05-01`,
+      categoryId: 'cat-salary',
+      createdAt: Date.now() + 2,
+      updatedAt: Date.now() + 2,
+    };
+
+    await saveTransaction(txJanExpense);
+    await saveTransaction(txNovExpense);
+    await saveTransaction(txIncome);
+
+    render(
+      <FinanceProvider>
+        <DashboardView />
+      </FinanceProvider>
+    );
+
+    // Encontra o botão para mudar para visão do Ano Todo
+    const annualTab = await screen.findByText(new RegExp(`Ano Todo \\(${y}\\)`, 'i'));
+    expect(annualTab).toBeTruthy();
+    fireEvent.click(annualTab);
+
+    // Deve exibir títulos e métricas da visão anual
+    expect(await screen.findByText(new RegExp(`Ano de ${y}`, 'i'))).toBeTruthy();
+    expect(screen.getByText(new RegExp(`Receitas \\(${y}\\)`, 'i'))).toBeTruthy();
+    expect(screen.getByText(new RegExp(`Despesas \\(${y}\\)`, 'i'))).toBeTruthy();
+    expect(screen.getByText(/Saldo Anual/i)).toBeTruthy();
+    expect(screen.getByText(/Distribuição Anual/i)).toBeTruthy();
+
+    // Deve listar as categorias de despesa do ano todo (Alimentação e Moradia)
+    expect(await screen.findByText('Moradia')).toBeTruthy();
+    expect(screen.getByText('Alimentação')).toBeTruthy();
+
+    // Alterna para Receitas por Categoria no ano todo
+    const incomeTab = screen.getByText(/Receitas por Categoria/i);
+    fireEvent.click(incomeTab);
+    expect(await screen.findByText('Salário')).toBeTruthy();
+
+    // Abre o Modal de Relatório Anual através do botão "Exportar Relatório"
+    const exportBtn = screen.getByText(/Exportar Relatório/i);
+    fireEvent.click(exportBtn);
+
+    // O modal deve estar aberto com o título e ações
+    expect(await screen.findByText(new RegExp(`Relatório Financeiro Anual \\(${y}\\)`, 'i'))).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Imprimir \/ PDF/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Planilha CSV/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /HTML/i })).toBeTruthy();
+    expect(screen.getByText(/1\. Sumário Executivo/i)).toBeTruthy();
+    expect(screen.getByText(/2\. Demonstrativo Mensal/i)).toBeTruthy();
+    expect(screen.getByText(/3\. Despesas por Categoria/i)).toBeTruthy();
+    expect(screen.getByText(/4\. Receitas por Categoria/i)).toBeTruthy();
+  });
 });

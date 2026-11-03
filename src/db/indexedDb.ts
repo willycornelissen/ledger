@@ -208,6 +208,36 @@ export async function getTransactionsByMonth(year: number, month: number): Promi
 }
 
 /**
+ * Retorna as transações de um ano calendário completo.
+ */
+export async function getTransactionsByYear(year: number): Promise<Transaction[]> {
+  const db = await getDB();
+  const startDate = `${year}-01-01`;
+  const endDate = `${year}-12-31`;
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('transactions', 'readonly');
+    const store = tx.objectStore('transactions');
+    const index = store.index('date');
+    const range = IDBKeyRange.bound(startDate, endDate);
+    const request = index.getAll(range);
+
+    request.onsuccess = () => {
+      const results = (request.result as Transaction[]) || [];
+      results.sort((a, b) => {
+        if (a.date !== b.date) {
+          return b.date.localeCompare(a.date);
+        }
+        return b.createdAt - a.createdAt;
+      });
+      resolve(results);
+    };
+
+    request.onerror = () => reject(request.error);
+  });
+}
+
+/**
  * Retorna todas as categorias cadastradas.
  */
 export async function getCategories(): Promise<Category[]> {

@@ -6,6 +6,7 @@ import {
   saveTransaction,
   deleteTransaction,
   getTransactionsByMonth,
+  getTransactionsByYear,
   getCategories,
   saveCategory,
   deleteCategory,
@@ -129,6 +130,14 @@ describe('Storage & Formatters Unit Tests', () => {
       // Consulta outubro de 2026 (sem transações)
       const octResults = await getTransactionsByMonth(2026, 10);
       expect(octResults).toHaveLength(0);
+
+      // Consulta anual de 2026 (deve trazer novembro e dezembro)
+      const yearResults = await getTransactionsByYear(2026);
+      expect(yearResults).toHaveLength(3);
+
+      // Consulta anual de 2025 (sem transações)
+      const year2025Results = await getTransactionsByYear(2025);
+      expect(year2025Results).toHaveLength(0);
     });
 
     it('deletes an existing transaction', async () => {

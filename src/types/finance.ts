@@ -46,6 +46,17 @@ export interface DailyTrend {
   income: number;      // Centavos
 }
 
+export interface MonthlyTrend {
+  month: number;          // 1 a 12
+  monthName: string;      // "Janeiro", "Fevereiro", etc.
+  shortMonthName: string; // "Jan", "Fev", etc.
+  expense: number;        // Centavos
+  income: number;         // Centavos
+  balance: number;        // Centavos
+  savingsRate: number;    // %
+  transactionCount: number;
+}
+
 export interface PeriodStats {
   totalIncome: number;
   totalExpense: number;
@@ -55,6 +66,22 @@ export interface PeriodStats {
   daysInMonth: number;
   categoryBreakdown: CategorySpending[];
   dailyTrends: DailyTrend[];
+}
+
+export interface AnnualStats {
+  year: number;
+  totalIncome: number;          // Centavos
+  totalExpense: number;         // Centavos
+  balance: number;              // Centavos
+  savingsRate: number;          // Percentual poupado (0 a 100)
+  monthlyAverageExpense: number;// Centavos
+  monthlyAverageIncome: number; // Centavos
+  dailyAverageExpense: number;  // Centavos
+  totalTransactionsCount: number;
+  daysInYear: number;
+  expenseCategoryBreakdown: CategorySpending[];
+  incomeCategoryBreakdown: CategorySpending[];
+  monthlyTrends: MonthlyTrend[];
 }
 
 export interface CsvColumnMapping {
