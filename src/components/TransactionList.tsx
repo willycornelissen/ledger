@@ -49,7 +49,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
   }
 
   return (
-    <div className="flex-1 pb-24 overflow-y-auto divide-y divide-slate-100">
+    <div className="flex-1 pb-8 overflow-y-auto divide-y divide-slate-100">
       {dailyTransactions.map((group) => {
         return (
           <div key={group.date} className="bg-white">

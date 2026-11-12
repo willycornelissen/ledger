@@ -97,7 +97,7 @@ export const DashboardView: React.FC = () => {
     : monthlyStats.totalIncome;
 
   return (
-    <div className="flex-1 pb-24 overflow-y-auto p-4 space-y-4">
+    <div className="flex-1 pb-8 sm:p-6 sm:space-y-6 overflow-y-auto p-4 space-y-4">
       {/* 1. Seletor de Período (Mensal vs Ano Todo) */}
       <div className="bg-slate-200/80 p-1 rounded-2xl flex items-center">
         <button

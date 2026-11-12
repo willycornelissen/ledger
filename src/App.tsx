@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { User } from 'firebase/auth';
 import { FinanceProvider, useFinance } from './context/FinanceContext';
 import { useAuth } from './hooks/useAuth';
 import { AuthGuard } from './components/AuthGuard';
@@ -9,9 +10,9 @@ import { TransactionForm } from './components/TransactionForm';
 import { CategoryManagerModal } from './components/CategoryManagerModal';
 import { BackupManagerModal } from './components/BackupManagerModal';
 import { Transaction } from './types/finance';
-import { Plus, ListFilter, PieChart, Tag, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 
-function FinanceApp({ onLogout }: { onLogout?: () => void }) {
+function FinanceApp({ user, onLogout }: { user?: User | null; onLogout?: () => void }) {
   const { error: financeError } = useFinance();
   const [activeView, setActiveView] = useState<'ledger' | 'dashboard'>('ledger');
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -35,35 +36,41 @@ function FinanceApp({ onLogout }: { onLogout?: () => void }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-200 sm:py-6 flex justify-center">
-      <div className="w-full sm:max-w-md bg-white min-h-screen sm:min-h-[844px] sm:max-h-[900px] flex flex-col sm:rounded-3xl shadow-2xl relative overflow-hidden">
-        {/* Cabeçalho com App Bar, mês, resumo de saldo e menu 3 pontos */}
-        <Header
-          onOpenBackupModal={() => setIsBackupModalOpen(true)}
-          onOpenCategoryModal={() => setIsCategoryModalOpen(true)}
-          onLogout={onLogout}
-        />
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans antialiased selection:bg-blue-500 selection:text-white">
+      {/* Header estilo Moleskine (com abas, novo lançamento, menu, avatar e logout) */}
+      <Header
+        user={user}
+        activeView={activeView}
+        onViewChange={setActiveView}
+        onOpenNewTransaction={handleOpenNewTransaction}
+        onOpenBackupModal={() => setIsBackupModalOpen(true)}
+        onOpenCategoryModal={() => setIsCategoryModalOpen(true)}
+        onLogout={onLogout}
+      />
 
-        {/* Banner de aviso do Firebase (ex: regras de permissão) */}
-        {financeError && (
-          <div className="bg-red-50 border-b border-red-200 px-4 py-3 flex items-start gap-2.5 text-red-800 text-xs animate-in fade-in">
-            <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+      {/* Banner de aviso do Firebase (ex: regras de permissão) */}
+      {financeError && (
+        <div className="max-w-4xl mx-auto px-4 w-full pt-4">
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3 text-red-800 text-xs">
+            <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
             <div className="flex-1">
               <span className="font-bold">Aviso Firebase:</span> {financeError}
               {financeError.toLowerCase().includes('permission') && (
                 <p className="mt-1 text-[11px] text-red-700 leading-relaxed">
                   As regras de segurança do Firestore no Firebase Console precisam permitir a leitura e escrita. Acesse <b>Firestore Database &gt; Rules</b> e publique:
-                  <code className="block bg-red-100/80 p-1.5 rounded mt-1 font-mono text-[10px] text-red-900 overflow-x-auto">
+                  <code className="block bg-red-100/80 p-2 rounded-xl mt-1.5 font-mono text-[10px] text-red-900 overflow-x-auto">
                     allow read, write: if request.auth != null &amp;&amp; request.auth.uid == userId;
                   </code>
                 </p>
               )}
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Conteúdo Dinâmico (Extrato ou Dashboard) */}
-        <main className="flex-1 overflow-y-auto flex flex-col bg-slate-50">
+      {/* Conteúdo Principal (Extrato ou Dashboard em container expandido estilo webapp) */}
+      <main className="max-w-4xl mx-auto px-4 py-6 w-full flex-1 flex flex-col">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden flex-1 flex flex-col min-h-[480px]">
           {activeView === 'ledger' ? (
             <TransactionList
               onEditTransaction={handleEditTransaction}
@@ -72,76 +79,25 @@ function FinanceApp({ onLogout }: { onLogout?: () => void }) {
           ) : (
             <DashboardView />
           )}
-        </main>
+        </div>
+      </main>
 
-        {/* Barra de Navegação Inferior (Mobile-first) */}
-        <nav className="bg-white border-t border-slate-200 px-4 py-2 safe-bottom flex items-center justify-around z-10 shrink-0">
-          {/* Aba Extrato */}
-          <button
-            onClick={() => setActiveView('ledger')}
-            className={`flex flex-col items-center gap-1 transition ${
-              activeView === 'ledger'
-                ? 'text-blue-600 font-bold'
-                : 'text-slate-400 hover:text-slate-600 font-medium'
-            }`}
-          >
-            <ListFilter size={20} />
-            <span className="text-[11px]">Extrato</span>
-          </button>
+      {/* Modais */}
+      <TransactionForm
+        isOpen={isFormOpen}
+        onClose={handleCloseForm}
+        transactionToEdit={editingTransaction}
+      />
 
-          {/* Aba Estatísticas */}
-          <button
-            onClick={() => setActiveView('dashboard')}
-            className={`flex flex-col items-center gap-1 transition ${
-              activeView === 'dashboard'
-                ? 'text-blue-600 font-bold'
-                : 'text-slate-400 hover:text-slate-600 font-medium'
-            }`}
-          >
-            <PieChart size={20} />
-            <span className="text-[11px]">Estatísticas</span>
-          </button>
+      <CategoryManagerModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+      />
 
-          {/* Botão Central de Novo Lançamento (+) */}
-          <div className="relative -top-4">
-            <button
-              onClick={handleOpenNewTransaction}
-              className="w-13 h-13 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white flex items-center justify-center shadow-lg shadow-blue-500/30 transition p-3"
-              aria-label="Novo lançamento"
-            >
-              <Plus size={26} />
-            </button>
-          </div>
-
-          {/* Botão Categorias */}
-          <button
-            onClick={() => setIsCategoryModalOpen(true)}
-            className="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 font-medium transition"
-          >
-            <Tag size={20} />
-            <span className="text-[11px]">Categorias</span>
-          </button>
-        </nav>
-
-        {/* Modal de Lançamento */}
-        <TransactionForm
-          isOpen={isFormOpen}
-          onClose={handleCloseForm}
-          transactionToEdit={editingTransaction}
-        />
-
-        {/* Modal de Gerenciamento de Categorias */}
-        <CategoryManagerModal
-          isOpen={isCategoryModalOpen}
-          onClose={() => setIsCategoryModalOpen(false)}
-        />
-
-        {/* Modal de Backup & Importação de Dados */}
-        <BackupManagerModal
-          isOpen={isBackupModalOpen}
-          onClose={() => setIsBackupModalOpen(false)}
-        />
-      </div>
+      <BackupManagerModal
+        isOpen={isBackupModalOpen}
+        onClose={() => setIsBackupModalOpen(false)}
+      />
     </div>
   );
 }
@@ -158,7 +114,7 @@ export default function App() {
       onLogin={signInWithGoogle}
     >
       <FinanceProvider userId={user?.uid}>
-        <FinanceApp onLogout={logout} />
+        <FinanceApp user={user} onLogout={logout} />
       </FinanceProvider>
     </AuthGuard>
   );
