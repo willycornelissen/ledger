@@ -14,14 +14,16 @@ import {
   Info,
   X,
   ShieldCheck,
+  LogOut,
 } from 'lucide-react';
 
 interface HeaderProps {
   onOpenBackupModal?: () => void;
   onOpenCategoryModal?: () => void;
+  onLogout?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenBackupModal, onOpenCategoryModal }) => {
+export const Header: React.FC<HeaderProps> = ({ onOpenBackupModal, onOpenCategoryModal, onLogout }) => {
   const {
     currentYear,
     currentMonth,
@@ -45,7 +47,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBackupModal, onOpenCategor
       <div className="flex items-center justify-between px-4 py-2.5">
         <div className="flex items-center gap-2.5">
           <img
-            src="/ledger.webp"
+            src="./ledger.webp"
             alt="Ledger"
             className="w-8 h-8 rounded-xl shadow-xs object-contain bg-white"
           />
@@ -129,9 +131,30 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBackupModal, onOpenCategor
                   </div>
                   <div>
                     <div className="font-semibold text-slate-800">Sobre o Ledger</div>
-                    <div className="text-[10px] text-slate-400">Versão 1.0 • Local-first</div>
+                    <div className="text-[10px] text-slate-400">Versão 1.0 • Cloud & Local</div>
                   </div>
                 </button>
+
+                {onLogout && (
+                  <>
+                    <div className="my-1 border-t border-slate-100" />
+                    <button
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        onLogout();
+                      }}
+                      className="w-full px-3.5 py-2.5 text-left text-xs font-medium text-red-600 hover:bg-red-50 flex items-center gap-2.5 transition"
+                    >
+                      <div className="p-1.5 rounded-lg bg-red-50 text-red-600">
+                        <LogOut size={15} />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-red-600">Sair da Conta</div>
+                        <div className="text-[10px] text-slate-400">Desconectar do Google</div>
+                      </div>
+                    </button>
+                  </>
+                )}
               </div>
             </>
           )}

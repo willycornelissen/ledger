@@ -83,7 +83,9 @@ O projeto foi projetado com abordagem *mobile-first* e opera perfeitamente tanto
 | **Frontend** | [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) | Interface reativa, modular e tipada |
 | **Estilização** | [Tailwind CSS](https://tailwindcss.com/) | Estilização utilitária responsiva e moderna |
 | **Ícones** | [Lucide React](https://lucide.dev/) | Ícones em SVG consistentes e leves |
-| **Persistência** | [IndexedDB API](https://developer.mozilla.org/pt-BR/docs/Web/API/IndexedDB_API) | Armazenamento local no dispositivo cliente (sem nuvem) |
+| **Persistência & Nuvem** | [Firebase Firestore](https://firebase.google.com/) + IndexedDB | Armazenamento na nuvem isolado por usuário com cache offline |
+| **Autenticação** | [Firebase Auth](https://firebase.google.com/) | Login seguro com Google restrito ao proprietário via `VITE_AUTHOR_UID` |
+| **Deploy** | [GitHub Pages](https://pages.github.com/) + GitHub Actions | CI/CD automatizado com segredos de ambiente |
 | **Build Tool** | [Vite 6](https://vitejs.dev/) | Empacotamento ultra-rápido com HMR |
 | **Mobile Nativo** | [Capacitor 8](https://capacitorjs.com/) | Ponte nativa para compilação Android |
 | **Testes** | [Vitest](https://vitest.dev/) + [Testing Library](https://testing-library.com/) | Suíte de testes unitários e de integração com JSDOM e fake-indexeddb |

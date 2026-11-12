@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { FinanceProvider } from './context/FinanceContext';
+import { FinanceProvider, useFinance } from './context/FinanceContext';
+import { useAuth } from './hooks/useAuth';
+import { AuthGuard } from './components/AuthGuard';
 import { Header } from './components/Header';
 import { TransactionList } from './components/TransactionList';
 import { DashboardView } from './components/DashboardView';
@@ -7,9 +9,10 @@ import { TransactionForm } from './components/TransactionForm';
 import { CategoryManagerModal } from './components/CategoryManagerModal';
 import { BackupManagerModal } from './components/BackupManagerModal';
 import { Transaction } from './types/finance';
-import { Plus, ListFilter, PieChart, Tag } from 'lucide-react';
+import { Plus, ListFilter, PieChart, Tag, AlertCircle } from 'lucide-react';
 
-function FinanceApp() {
+function FinanceApp({ onLogout }: { onLogout?: () => void }) {
+  const { error: financeError } = useFinance();
   const [activeView, setActiveView] = useState<'ledger' | 'dashboard'>('ledger');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -38,7 +41,26 @@ function FinanceApp() {
         <Header
           onOpenBackupModal={() => setIsBackupModalOpen(true)}
           onOpenCategoryModal={() => setIsCategoryModalOpen(true)}
+          onLogout={onLogout}
         />
+
+        {/* Banner de aviso do Firebase (ex: regras de permissão) */}
+        {financeError && (
+          <div className="bg-red-50 border-b border-red-200 px-4 py-3 flex items-start gap-2.5 text-red-800 text-xs animate-in fade-in">
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <span className="font-bold">Aviso Firebase:</span> {financeError}
+              {financeError.toLowerCase().includes('permission') && (
+                <p className="mt-1 text-[11px] text-red-700 leading-relaxed">
+                  As regras de segurança do Firestore no Firebase Console precisam permitir a leitura e escrita. Acesse <b>Firestore Database &gt; Rules</b> e publique:
+                  <code className="block bg-red-100/80 p-1.5 rounded mt-1 font-mono text-[10px] text-red-900 overflow-x-auto">
+                    allow read, write: if request.auth != null &amp;&amp; request.auth.uid == userId;
+                  </code>
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Conteúdo Dinâmico (Extrato ou Dashboard) */}
         <main className="flex-1 overflow-y-auto flex flex-col bg-slate-50">
@@ -125,9 +147,19 @@ function FinanceApp() {
 }
 
 export default function App() {
+  const { user, loading, isAuthorized, error, signInWithGoogle, logout } = useAuth();
+
   return (
-    <FinanceProvider>
-      <FinanceApp />
-    </FinanceProvider>
+    <AuthGuard
+      loading={loading}
+      isAuthorized={isAuthorized}
+      user={user}
+      error={error}
+      onLogin={signInWithGoogle}
+    >
+      <FinanceProvider userId={user?.uid}>
+        <FinanceApp onLogout={logout} />
+      </FinanceProvider>
+    </AuthGuard>
   );
 }
