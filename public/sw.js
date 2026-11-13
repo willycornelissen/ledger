@@ -1,9 +1,15 @@
-const CACHE_NAME = 'finance-ledger-v1';
+const CACHE_NAME = 'finance-ledger-v2';
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon.svg',
+  './',
+  './index.html',
+  './manifest.json',
+  './ledger.webp',
+  './icon-192.png',
+  './icon-512.png',
+  './icon-maskable-192.png',
+  './icon-maskable-512.png',
+  './icon.png',
+  './icon.svg',
 ];
 
 // Instalação do Service Worker
@@ -75,7 +81,7 @@ self.addEventListener('fetch', (event) => {
         .catch(() => {
           // Se for uma requisição de página HTML e estiver offline, retorna o index do cache
           if (event.request.headers.get('accept')?.includes('text/html')) {
-            return caches.match('/index.html');
+            return caches.match('./index.html') || caches.match('/index.html');
           }
         });
     })

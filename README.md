@@ -113,8 +113,12 @@ ledger/
 │       └── deploy.yml         # Pipeline CI/CD: testes, build e deploy no GitHub Pages
 ├── android/                   # Projeto nativo Android (Capacitor)
 ├── public/                    # Ativos estáticos e PWA
-│   ├── icon.png
-│   ├── icon.svg
+│   ├── icon.png               # Ícone da aplicação (alta resolução)
+│   ├── icon-192.png           # Ícone PWA standard (192x192)
+│   ├── icon-512.png           # Ícone PWA standard (512x512)
+│   ├── icon-maskable-192.png  # Ícone PWA adaptativo Android (192x192)
+│   ├── icon-maskable-512.png  # Ícone PWA adaptativo Android (512x512)
+│   ├── icon.svg               # Logotipo em formato vetorial SVG
 │   ├── ledger.webp            # Logotipo oficial
 │   ├── manifest.json
 │   └── sw.js

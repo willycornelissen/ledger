@@ -2,30 +2,48 @@
   "name": "Ledger",
   "short_name": "Ledger",
   "description": "Aplicativo pessoal local-first para controle de despesas e receitas offline.",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0f172a",
+  "background_color": "#ffffff",
   "theme_color": "#0f172a",
   "icons": [
     {
-      "src": "/ledger.webp",
-      "sizes": "260x280",
-      "type": "image/webp",
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon.png",
-      "sizes": "260x280",
+      "src": "./icon-512.png",
+      "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/icon.svg",
-      "sizes": "192x192 512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "src": "./icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./ledger.webp",
+      "sizes": "260x280",
+      "type": "image/webp",
+      "purpose": "any"
     }
   ],
   "categories": ["finance", "productivity", "utilities"]
