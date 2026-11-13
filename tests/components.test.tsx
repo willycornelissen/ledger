@@ -9,6 +9,7 @@ import { Header } from '../src/components/Header';
 import { TransactionList } from '../src/components/TransactionList';
 import { getDB, resetDBConnection, saveTransaction } from '../src/db/indexedDb';
 import { Transaction } from '../src/types/finance';
+import { formatMonthYear } from '../src/utils/formatters';
 
 describe('React Components Integration', () => {
   beforeEach(async () => {
@@ -117,5 +118,33 @@ describe('React Components Integration', () => {
     const noteEl = await screen.findByText('Jantar com amigos');
     expect(noteEl).toBeTruthy();
     expect(screen.getByText(/- R\$ 85,50/i)).toBeTruthy();
+  });
+
+  it('starts on the current month even when previous months have transactions and current has none', async () => {
+    const today = new Date();
+    const prevDate = new Date(today.getFullYear(), today.getMonth() - 1, 15);
+    const prevY = prevDate.getFullYear();
+    const prevM = String(prevDate.getMonth() + 1).padStart(2, '0');
+    const prevD = String(prevDate.getDate()).padStart(2, '0');
+
+    await saveTransaction({
+      id: 'tx-prev-month',
+      type: 'expense',
+      amount: 5000,
+      date: `${prevY}-${prevM}-${prevD}`,
+      categoryId: 'cat-food',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    render(
+      <FinanceProvider>
+        <Header />
+      </FinanceProvider>
+    );
+
+    const expectedMonthYear = formatMonthYear(today.getFullYear(), today.getMonth() + 1);
+    expect(await screen.findByText(expectedMonthYear)).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /Mês Atual/i })).toBeNull();
   });
 });

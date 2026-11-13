@@ -56,7 +56,6 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode; userId?: str
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const migrationCheckedRef = React.useRef(false);
-  const initialMonthAdjustedRef = React.useRef(false);
 
   const loadData = useCallback(async () => {
     try {
@@ -93,26 +92,6 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode; userId?: str
           idb.getTransactionsByYear(currentYear),
           idb.getCategories(),
         ]);
-      }
-
-      // Se o mês atual estiver sem transações mas o ano tiver transações em meses anteriores (ex: Outubro 2026),
-      // navega automaticamente para o último mês com registros para o usuário ver seus dados imediatamente!
-      if (!initialMonthAdjustedRef.current && txList.length === 0 && yearTxList.length > 0) {
-        initialMonthAdjustedRef.current = true;
-        const monthsWithData = yearTxList
-          .map((t) => {
-            const parts = t.date.split('-');
-            return parts.length > 1 ? parseInt(parts[1], 10) : 0;
-          })
-          .filter((m) => m > 0);
-
-        if (monthsWithData.length > 0) {
-          const latestMonth = Math.max(...monthsWithData);
-          if (latestMonth !== currentMonth) {
-            setCurrentMonth(latestMonth);
-            return;
-          }
-        }
       }
 
       setTransactions(txList);
